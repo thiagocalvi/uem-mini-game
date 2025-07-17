@@ -49,9 +49,9 @@ var (
 	squarePhysics  Physics
 
 	// Arrays para múltiplos obstáculos
-	obstaclePositions [10]Position // Máximo de 10 obstáculos
-	obstacleDrawables [10]Drawable
-	obstacleDepths    [10]Depth
+	obstaclePositions [100]Position // Máximo de 10 obstáculos
+	obstacleDrawables [100]Drawable
+	obstacleDepths    [100]Depth
 
 	// Variáveis para geração de obstáculos
 	obstacleSpawnTimer int
@@ -66,7 +66,7 @@ var (
 	menuOption    int
 	previousInput uint8
 
-	obstacleSlopes [10]float32
+	obstacleSlopes [100]float32
 )
 
 const (
@@ -79,10 +79,10 @@ const (
 	MAX_VELOCITY_Y = 15.0
 
 	// Constantes para obstáculos
-	OBSTACLE_BASE_SIZE  = 2    // Tamanho inicial do obstáculo (2x1)
-	OBSTACLE_MAX_SIZE   = 20   // Tamanho máximo do obstáculo (limitação)
-	OBSTACLE_SPEED      = 0.04 // Velocidade de aproximação (mais lenta para melhor efeito)
-	OBSTACLE_SPAWN_RATE = 120  // Frames entre spawn de obstáculos (2 segundos a 60fps)
+	OBSTACLE_BASE_SIZE  = 2     // Tamanho inicial do obstáculo (2x1)
+	OBSTACLE_MAX_SIZE   = 20    // Tamanho máximo do obstáculo (limitação)
+	OBSTACLE_SPEED      = 0.004 // Velocidade de aproximação (mais lenta para melhor efeito)
+	OBSTACLE_SPAWN_RATE = 70    // Frames entre spawn de obstáculos (2 segundos a 60fps)
 
 	// Constantes para pontuação
 	SCORE_INCREMENT_RATE = 50 // Frames entre incrementos de pontuação (1 segundo a 60fps)
@@ -281,7 +281,7 @@ func obstacleSystem() {
 	}
 
 	// Atualiza todos os obstáculos ativos
-	for i := 0; i < 10; i++ {
+	for i := 99; i >= 0; i-- {
 		if obstacleDepths[i].Active {
 			updateObstacle(i)
 		}
@@ -291,7 +291,7 @@ func obstacleSystem() {
 // spawnObstacle cria um novo obstáculo na posição específica (79, 61)
 func spawnObstacle() {
 	// Encontra um slot livre para o obstáculo
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 100; i++ {
 		if !obstacleDepths[i].Active {
 			// Posição fixa onde o obstáculo aparece
 			obstaclePositions[i].X = 79 // Posição X fixa
@@ -358,7 +358,7 @@ func updateObstacle(index int) {
 // collisionSystem detecta colisões entre o jogador e os obstáculos
 func collisionSystem() {
 	// Verifica colisão com todos os obstáculos ativos
-	for i := 9; i >= 0; i-- {
+	for i := 99; i >= 0; i-- {
 		if obstacleDepths[i].Active {
 			// Calcula as bordas do jogador
 			playerLeft := squarePosition.X
