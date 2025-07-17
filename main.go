@@ -2,6 +2,7 @@ package main
 
 import (
 	"cart/w4"
+	"math/rand"
 	"strconv"
 )
 
@@ -64,6 +65,8 @@ var (
 	gameState     int
 	menuOption    int
 	previousInput uint8
+
+	obstacleSlopes [10]float32
 )
 
 const (
@@ -76,10 +79,10 @@ const (
 	MAX_VELOCITY_Y = 15.0
 
 	// Constantes para obstáculos
-	OBSTACLE_BASE_SIZE  = 2     // Tamanho inicial do obstáculo (2x1)
-	OBSTACLE_MAX_SIZE   = 20    // Tamanho máximo do obstáculo (limitação)
-	OBSTACLE_SPEED      = 0.004 // Velocidade de aproximação (mais lenta para melhor efeito)
-	OBSTACLE_SPAWN_RATE = 120   // Frames entre spawn de obstáculos (2 segundos a 60fps)
+	OBSTACLE_BASE_SIZE  = 2    // Tamanho inicial do obstáculo (2x1)
+	OBSTACLE_MAX_SIZE   = 20   // Tamanho máximo do obstáculo (limitação)
+	OBSTACLE_SPEED      = 0.04 // Velocidade de aproximação (mais lenta para melhor efeito)
+	OBSTACLE_SPAWN_RATE = 120  // Frames entre spawn de obstáculos (2 segundos a 60fps)
 
 	// Constantes para pontuação
 	SCORE_INCREMENT_RATE = 50 // Frames entre incrementos de pontuação (1 segundo a 60fps)
@@ -97,6 +100,7 @@ const (
 
 //go:export start
 func start() {
+
 	// Inicializa os componentes da nossa entidade "quadrado".
 
 	// Componente PlayerInput
@@ -302,44 +306,44 @@ func spawnObstacle() {
 			obstacleDepths[i].MaxSize = 30 // Tamanho máximo (limitação)
 			obstacleDepths[i].Active = true
 
+			obstacleSlopes[i] = rand.Float32()*2 - 1 // valor entre -1.0 e 1.0
+
 			break // Sai do loop após criar um obstáculo
 		}
 	}
 }
 
-// updateObstacle atualiza um obstáculo específico
+// updateObstacle atualiza um obstáculo específico com movimento lateral aleatório
 func updateObstacle(index int) {
 	// Aproxima do jogador
 	obstacleDepths[index].Z += obstacleDepths[index].Speed
 
-	// Se chegou muito perto desativa o obstáculo
-	if obstaclePositions[index].Y+int(obstacleDrawables[index].Size) == 160 {
-		obstacleDepths[index] = Depth{}       // Reseta o obstáculo
-		obstaclePositions[index] = Position{} // Reseta a posição
-		obstacleDrawables[index] = Drawable{} // Reseta o drawable
-		obstacleDepths[index].Active = false  // Marca como inativo
-		obstacleSpawnTimer = 0                // Reseta o timer de spawn
+	// Se chegou muito perto, desativa o obstáculo
+	if obstaclePositions[index].Y+int(obstacleDrawables[index].Size) >= 160 {
+		obstacleDepths[index] = Depth{}
+		obstaclePositions[index] = Position{}
+		obstacleDrawables[index] = Drawable{}
+		obstacleDepths[index].Active = false
+		obstacleSpawnTimer = 0
 		return
 	}
 
-	// Calcula o tamanho baseado na profundidade (tanto largura quanto altura)
+	// Calcula o tamanho com base na profundidade
 	sizeRange := float32(obstacleDepths[index].MaxSize - obstacleDepths[index].BaseSize)
 	currentSize := obstacleDepths[index].BaseSize + uint(obstacleDepths[index].Z*sizeRange)
 	obstacleDrawables[index].Size = currentSize
 
-	// Move o obstáculo em direção ao jogador (efeito de aproximação)
-	// Começando em (79, 61) e se expandindo/movendo conforme cresce
-
 	// Calcula o deslocamento baseado no crescimento
 	sizeOffset := int(currentSize) / 2
 
-	// Ajusta posição X (centraliza o crescimento)
-	obstaclePositions[index].X = 79 - sizeOffset
+	// Movimento lateral aleatório com base na profundidade
+	xOffset := int(obstacleSlopes[index] * obstacleDepths[index].Z * 40) // 40 é o alcance lateral máximo
+	obstaclePositions[index].X = 79 - sizeOffset + xOffset
 
-	// Ajusta posição Y (o obstáculo "desce" conforme cresce)
-	obstaclePositions[index].Y = 61 + int(obstacleDepths[index].Z*40) // Move para baixo
+	// Movimento vertical (aproximação)
+	obstaclePositions[index].Y = 61 + int(obstacleDepths[index].Z*40)
 
-	// Garante que não saia da tela
+	// Limita dentro da estrada (bordas laterais)
 	if obstaclePositions[index].X < 0 {
 		obstaclePositions[index].X = 0
 	}
