@@ -489,12 +489,12 @@ func renderMenu() {
 	*w4.DRAW_COLORS = 0x4
 	w4.Text("MINI GAME", 45, 40)
 
-	w4.Text("X para iniciar", 32, 70)
+	w4.Text("X to start", 32, 70)
 
-	w4.Text("Controles:", 40, 90)
-	w4.Text("Mover \x84 e \x85", 32, 100)
-	w4.Text("\x86  para pular", 32, 110)
-	w4.Text("Z para pausar", 32, 120)
+	w4.Text("Controls:", 40, 90)
+	w4.Text("Move \x84 and \x85", 32, 100)
+	w4.Text("\x86  to jump", 32, 110)
+	w4.Text("Z to pause", 32, 120)
 }
 
 // renderPauseMenu renderiza o menu de pausa
@@ -504,9 +504,9 @@ func renderPauseMenu() {
 
 	// Desenha menu de pausa por cima
 	*w4.DRAW_COLORS = 0x3
-	w4.Text("PAUSADO", 55, 50)
-	w4.Text("Use \x86\x87 para navegar", 5, 100)
-	w4.Text("X para selecionar", 10, 110)
+	w4.Text("PAUSED", 55, 50)
+	w4.Text("Use \x86\x87 to navigate", 5, 100)
+	w4.Text("X to select", 20, 110)
 
 	// Desenha opções do menu de pausa
 	for i := MENU_RESUME; i <= MENU_RESTART; i++ {
@@ -520,9 +520,9 @@ func renderPauseMenu() {
 
 		switch i {
 		case MENU_RESUME:
-			w4.Text("Continuar", 50, 70)
+			w4.Text("Continue", 50, 70)
 		case MENU_RESTART:
-			w4.Text("Reiniciar", 50, 80)
+			w4.Text("Restart", 50, 80)
 		}
 	}
 }
