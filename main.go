@@ -123,9 +123,12 @@ func start() {
 	squarePhysics.Friction = FRICTION
 
 	// Inicializa todos os obstáculos como inativos
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 100; i++ {
 		obstacleDepths[i].Active = false
 	}
+
+	// Inicializa o índice da fila de obstáculos
+	nextObstacleIndex = 0
 
 	// Inicializa pontuação
 	score = 0
@@ -256,8 +259,8 @@ func renderSystem() {
 
 	drawBorder()
 
-	// Desenha todos os obstáculos ativos
-	for i := 9; i >= 0; i-- {
+	// Desenha todos os obstáculos ativos (do mais distante para o mais próximo)
+	for i := 99; i >= 0; i-- {
 		if obstacleDepths[i].Active {
 			*w4.DRAW_COLORS = obstacleDrawables[i].Color
 			w4.Rect(obstaclePositions[i].X, obstaclePositions[i].Y, obstacleDrawables[i].Size, obstacleDrawables[i].Size)
@@ -281,7 +284,7 @@ func obstacleSystem() {
 	}
 
 	// Atualiza todos os obstáculos ativos
-	for i := 99; i >= 0; i-- {
+	for i := 0; i < 100; i++ {
 		if obstacleDepths[i].Active {
 			updateObstacle(i)
 		}
@@ -290,27 +293,26 @@ func obstacleSystem() {
 
 // spawnObstacle cria um novo obstáculo na posição específica (79, 61)
 func spawnObstacle() {
-	// Encontra um slot livre para o obstáculo
-	for i := 0; i < 100; i++ {
-		if !obstacleDepths[i].Active {
-			// Posição fixa onde o obstáculo aparece
-			obstaclePositions[i].X = 79 // Posição X fixa
-			obstaclePositions[i].Y = 61 // Posição Y fixa
+	// Usa o índice atual da fila
+	i := nextObstacleIndex
 
-			obstacleDrawables[i].Size = 2     // Tamanho inicial 2x1 (será tratado como width)
-			obstacleDrawables[i].Color = 0x32 // Cor vermelha
+	// Posição fixa onde o obstáculo aparece
+	obstaclePositions[i].X = 79 // Posição X fixa
+	obstaclePositions[i].Y = 61 // Posição Y fixa
 
-			obstacleDepths[i].Z = 0.0 // Começa no fundo (pequeno)
-			obstacleDepths[i].Speed = OBSTACLE_SPEED
-			obstacleDepths[i].BaseSize = 2 // Tamanho inicial 2x1
-			obstacleDepths[i].MaxSize = 30 // Tamanho máximo (limitação)
-			obstacleDepths[i].Active = true
+	obstacleDrawables[i].Size = 2     // Tamanho inicial 2x1
+	obstacleDrawables[i].Color = 0x32 // Cor vermelha
 
-			obstacleSlopes[i] = rand.Float32()*2 - 1 // valor entre -1.0 e 1.0
+	obstacleDepths[i].Z = 0.0 // Começa no fundo (pequeno)
+	obstacleDepths[i].Speed = OBSTACLE_SPEED
+	obstacleDepths[i].BaseSize = 2 // Tamanho inicial 2x1
+	obstacleDepths[i].MaxSize = 30 // Tamanho máximo (limitação)
+	obstacleDepths[i].Active = true
 
-			break // Sai do loop após criar um obstáculo
-		}
-	}
+	obstacleSlopes[i] = rand.Float32()*2 - 1 // valor entre -1.0 e 1.0
+
+	// Avança para o próximo índice (sistema circular)
+	nextObstacleIndex = (nextObstacleIndex + 1) % 100
 }
 
 // updateObstacle atualiza um obstáculo específico com movimento lateral aleatório
@@ -395,12 +397,15 @@ func resetGame() {
 	squarePhysics.OnGround = true
 
 	// Remove todos os obstáculos
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 100; i++ {
 		obstacleDepths[i].Active = false
 	}
 
 	// Reseta o timer de spawn
 	obstacleSpawnTimer = 0
+
+	// Reseta o índice da fila de obstáculos
+	nextObstacleIndex = 0
 
 	// Reseta a pontuação
 	score = 0
