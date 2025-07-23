@@ -49,7 +49,7 @@ var (
 	squarePhysics  Physics
 
 	// Arrays para múltiplos obstáculos
-	obstaclePositions [100]Position // Máximo de 10 obstáculos
+	obstaclePositions [100]Position // Máximo de 100 obstáculos
 	obstacleDrawables [100]Drawable
 	obstacleDepths    [100]Depth
 
@@ -80,12 +80,12 @@ const (
 
 	// Constantes para obstáculos
 	OBSTACLE_BASE_SIZE  = 2     // Tamanho inicial do obstáculo (2x1)
-	OBSTACLE_MAX_SIZE   = 20    // Tamanho máximo do obstáculo (limitação)
-	OBSTACLE_SPEED      = 0.004 // Velocidade de aproximação (mais lenta para melhor efeito)
-	OBSTACLE_SPAWN_RATE = 70    // Frames entre spawn de obstáculos (2 segundos a 60fps)
+	OBSTACLE_MAX_SIZE   = 20    // Tamanho máximo do obstáculo
+	OBSTACLE_SPEED      = 0.004 // Velocidade de aproximação
+	OBSTACLE_SPAWN_RATE = 70    // Frames entre spawn de obstáculos
 
 	// Constantes para pontuação
-	SCORE_INCREMENT_RATE = 50 // Frames entre incrementos de pontuação (1 segundo a 60fps)
+	SCORE_INCREMENT_RATE = 50 // Frames entre incrementos de pontuação
 
 	// Estados do jogo
 	STATE_MENU    = 0
@@ -101,7 +101,7 @@ const (
 //go:export start
 func start() {
 
-	// Inicializa os componentes da nossa entidade "quadrado".
+	// Inicializa os componentes da entidade "quadrado".
 
 	// Componente PlayerInput
 	playerPosition.Speed = PLAYER_SPEED
